@@ -4,19 +4,33 @@
     import { select } from 'd3-selection';
     import { scaleLinear, scaleOrdinal } from 'd3-scale';
     import { schemeCategory10 } from 'd3-scale-chromatic';
+    import { zoom } from 'd3-zoom';
   
     let worldData = [];
-    let width = 960;
-    let height = 540;
+    let width = 0;
+    let height = 0;
     let locationData = [];
+    let mapGroup;
+    let zoomHandler;
+
+    function getWorldMapSize() {
+        const worldMapElement = document.getElementById('world_map');
+        if (worldMapElement) {
+            width = worldMapElement.clientWidth-30;
+            height = worldMapElement.clientHeight-30;
+            console.log(width);
+            console.log(height);
+        }
+    }
   
     onMount(async () => {
       try {
         const response = await fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson');
         worldData = await response.json();
-  
         const locationResponse = await fetch('http://localhost:8080/api/ips/country-count-gps');
         locationData = await locationResponse.json();
+        getWorldMapSize();
+        initZoom();
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -42,10 +56,25 @@
   
     $: colorScale = scaleOrdinal(schemeCategory10);
   
+    function initZoom() {
+      zoomHandler = zoom()
+        .scaleExtent([1, 10])
+        .on('zoom', handleZoom);
+  
+      select('#map')
+        .call(zoomHandler);
+    }
+  
+    function handleZoom(event) {
+      mapGroup.attr('transform', event.transform);
+    }
+  
     function drawMap() {
       if (worldData.features) {
-        select('#map')
-          .selectAll('path')
+        mapGroup = select('#map')
+          .append('g');
+  
+        mapGroup.selectAll('path')
           .data(worldData.features)
           .enter()
           .append('path')
@@ -54,8 +83,7 @@
           .attr('stroke', 'white')
           .attr('stroke-width', 0.5);
   
-        select('#map')
-          .selectAll('circle')
+        mapGroup.selectAll('circle')
           .data(locationData)
           .enter()
           .append('circle')
@@ -72,6 +100,7 @@
         drawMap();
       }
     }
-  </script>
-  
-  <svg id="map" width={width} height={height}></svg>
+</script>
+<div class="flex">
+    <svg class="flex flex-1 items-center" id="map" width={width} height={height}></svg>
+</div>
