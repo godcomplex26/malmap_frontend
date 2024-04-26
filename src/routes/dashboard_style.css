@@ -1,0 +1,154 @@
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding-top: 60px; /* header 높이만큼 패딩 추가 */
+    height: 100vh;
+    display: flex;
+    align-items: flex-start; /* header 고려 변경 */
+    justify-content: flex-start;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px; /* 여백 조정 */
+    font-size: 24px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.menu-icon {
+    font-size: 30px; /* 아이콘 크기 조정 */
+    margin-right: 20px; /* 제목과의 간격 조정 */
+}
+
+nav {
+    position: fixed; /* 고정 위치 */
+    top: 60px; /* header 아래에서 시작 */
+    left: 0;
+    width: 60px;
+    height: calc(100vh - 60px); /* 화면 높이에서 header 높이를 제외 */
+    background-color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    padding-top: 20px;
+    z-index: 999; /* header 아래에 위치하도록 z-index 설정 */
+}
+
+nav.expanded {
+    width: 160px; /* 확장된 상태 */
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin: 10px 0;
+}
+
+.menu-item {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.menu-item:hover {
+    background-color: #555;
+    transform: scale(1.1);
+}
+
+.menu-text {
+    color: white;
+    display: none; /* 초기 상태: 숨김 */
+    padding-left: 10px;
+}
+
+nav.expanded .menu-text {
+    display: block; /* 확장 상태: 표시 */
+}
+
+nav ul a {
+    color: white;
+}
+
+header a {
+    color: white;
+}
+
+header h1 {
+    margin: 0;
+    padding: 0;
+    padding-left: 20px;
+    font-size: 24px;
+}
+
+.disabledForeColor {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: lightgray;
+}
+
+.dashboard-container {
+    width: calc(100vw - 60px); /* 전체 뷰포트 넓이에서 nav 바의 넓이를 빼서 계산 */
+    height: calc(100vh - 60px);
+    margin-left: 60px; /* nav 바와 같은 넓이를 좌측 여백으로 설정 */
+    padding: 20px;
+    box-sizing: border-box; /* 패딩을 넓이에 포함 */
+    display: flex;
+}
+
+.dashboard-main {
+    flex: 3;
+}
+
+.dashboard-sidebar {
+    flex: 1;
+    margin-left: 20px;
+}
+
+.box {
+    border: 2px solid lightgray;
+    margin-bottom: 20px;
+    padding: 10px;
+    height: 200px; /* 높이는 예시로 설정한 것이며, 필요에 따라 조정 가능 */
+}
+
+.map-chart {
+    height: 93%
+}
+
+.charts {
+    height: 220px;
+}
+
+.country-list {
+    height: 290px;
+}
