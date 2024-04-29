@@ -4,9 +4,11 @@
     import { select } from 'd3-selection';
     import { scaleLinear, scaleOrdinal } from 'd3-scale';
     import { schemeCategory10 } from 'd3-scale-chromatic';
+    // import { interpolateRainbow } from 'd3-scale-chromatic';
     import { zoom } from 'd3-zoom';
+    import worldData from '../data/worldmap.geo.json';
   
-    let worldData = [];
+    // let worldData = [];
     let width = 0;
     let height = 0;
     let locationData = [];
@@ -25,8 +27,8 @@
   
     onMount(async () => {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson');
-        worldData = await response.json();
+        // const response = await fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson');
+        // worldData = await response.json();
         const locationResponse = await fetch('http://localhost:8080/api/ips/country-count-gps');
         locationData = await locationResponse.json();
         getWorldMapSize();
@@ -55,6 +57,8 @@
       .range([3, 50]);
   
     $: colorScale = scaleOrdinal(schemeCategory10);
+    // $: colorScale = scaleOrdinal(schemeCategory10).domain([...new Set(locationData.map(d => d.country))]);
+    // $: colorScale = scaleSequential(interpolateRainbow).domain([...new Set(locationData.map(d => d.country))]);
   
     function initZoom() {
       zoomHandler = zoom()
@@ -90,7 +94,7 @@
           .attr('cx', d => longitudeScale(d.longitude))
           .attr('cy', d => latitudeScale(d.latitude))
           .attr('r', d => countScale(d.count))
-          .attr('fill', d => colorScale(d.country))
+          .attr('fill', d => colorScale(d.country_code))
           .attr('opacity', 0.7);
       }
     }
