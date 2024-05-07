@@ -16,13 +16,13 @@
     let zoomHandler;
 
     function getWorldMapSize() {
-        const worldMapElement = document.getElementById('world_map');
-        if (worldMapElement) {
-            width = worldMapElement.clientWidth-30;
-            height = worldMapElement.clientHeight-30;
-            console.log(width);
-            console.log(height);
-        }
+      const worldMapElement = document.getElementById('world_map');
+      if (worldMapElement) {
+          width = worldMapElement.clientWidth-30;
+          height = worldMapElement.clientHeight-30;
+          console.log(width);
+          console.log(height);
+      }
     }
   
     onMount(async () => {
@@ -44,13 +44,13 @@
   
     $: pathGenerator = geoPath().projection(projection);
   
-    $: latitudeScale = scaleLinear()
-      .domain([-90, 90])
-      .range([height, 0]);
+    // $: latitudeScale = scaleLinear()
+    //   .domain([-90, 90])
+    //   .range([height, 0]);
   
-    $: longitudeScale = scaleLinear()
-      .domain([-180, 180])
-      .range([0, width]);
+    // $: longitudeScale = scaleLinear()
+    //   .domain([-180, 180])
+    //   .range([0, width]);
   
     $: countScale = scaleLinear()
       .domain([0, Math.max(...locationData.map(d => d.count))])
@@ -62,7 +62,7 @@
   
     function initZoom() {
       zoomHandler = zoom()
-        .scaleExtent([1, 10])
+        .scaleExtent([1, 15])
         .on('zoom', handleZoom);
   
       select('#map')
@@ -88,14 +88,26 @@
           .attr('stroke-width', 0.5);
   
         mapGroup.selectAll('circle')
-          .data(locationData)
+          .data(locationData.filter(d => d.country_code !== 'Unknown'))
           .enter()
           .append('circle')
-          .attr('cx', d => longitudeScale(d.longitude))
-          .attr('cy', d => latitudeScale(d.latitude))
+          .attr('cx', d => projection([d.longitude, d.latitude])[0])
+          .attr('cy', d => projection([d.longitude, d.latitude])[1])
           .attr('r', d => countScale(d.count))
           .attr('fill', d => colorScale(d.country_code))
           .attr('opacity', 0.7);
+        
+        // mapGroup.selectAll('text')
+        //   .data(locationData.filter(d => d.country_code !== 'Unknown'))
+        //   .enter()
+        //   .append('text')
+        //   .attr('x', d => projection([d.longitude, d.latitude])[0])
+        //   .attr('y', d => projection([d.longitude, d.latitude])[1])
+        //   .attr('dy', '0.35em')
+        //   .attr('text-anchor', 'middle')
+        //   .attr('font-size', '8px')
+        //   .attr('fill', 'black')
+        //   .text(d => d.country_code);
       }
     }
   
