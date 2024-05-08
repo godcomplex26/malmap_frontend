@@ -2,6 +2,7 @@
     import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
     import { schemeCategory10 } from "d3-scale-chromatic";
     import { format } from "d3-format";
+    import { colorScale } from "../data/colorScale";
   
     export let data;
     export let w = 0;
@@ -22,7 +23,7 @@
       .domain([0, Math.max.apply(null, data.map((d) => +d.count))])
       .range([innerHeight, 0]);
   
-    $: colorScale = scaleOrdinal(schemeCategory10);
+    // $: colorScale = scaleOrdinal(schemeCategory10);
 
     const formatNumber = format(".2s");
   </script>

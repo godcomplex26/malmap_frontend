@@ -90,7 +90,7 @@
   <div class="container mt-10 mx-auto">
     <div class="grid grid-cols-8 grid-rows-12 gap-4 min-w-[1072px]">
         <div class="p-4 bg-gray-200 flex col-span-6 row-span-12 min-w-[764px]">
-            <div id="world_map" class="flex-1 h-[616px] max-h-[616px] overflow-hidden" bind:clientWidth={map_width} bind:clientHeight={map_height}>
+            <div id="world_map" class="flex-1 h-[600px] max-h-[600px] overflow-hidden" bind:clientWidth={map_width} bind:clientHeight={map_height}>
                 <WorldMap locationData={show_list} bind:width={map_width} bind:height={map_height}></WorldMap>
             </div>
         </div>

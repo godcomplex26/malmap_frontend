@@ -8,6 +8,7 @@
   import { zoom, zoomIdentity } from 'd3-zoom';
   import worldData from '../data/worldmap.geo.json';
 	import { timeDay } from 'd3';
+  import { colorScale } from "../data/colorScale";
   
   // let worldData = [];
     /**
@@ -88,7 +89,7 @@
       .domain([0, Math.max(...locationData.map(d => d.count))])
       .range([3, 50]);
   
-    $: colorScale = scaleOrdinal(schemeCategory10);
+    // $: colorScale = scaleOrdinal(schemeCategory10);
     // $: colorScale = scaleOrdinal(schemeCategory10).domain([...new Set(locationData.map(d => d.country))]);
     // $: colorScale = scaleSequential(interpolateRainbow).domain([...new Set(locationData.map(d => d.country))]);
   

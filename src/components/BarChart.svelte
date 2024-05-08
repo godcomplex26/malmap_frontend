@@ -2,6 +2,7 @@
     import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
     import { schemeCategory10 } from "d3-scale-chromatic";
     import { format } from "d3-format";
+    import { colorScale } from "../data/colorScale";
   
     export let data;
     export let w = 0;
@@ -13,11 +14,14 @@
   
     $: xDomain = data.map((d) => d.country_code);
     $: yDomain = data.map((d) => +d.count);
-    $: yScale = scaleBand().domain(xDomain).range([0, innerHeight]).padding(0.1);
+    $: yScale = scaleBand()
+        .domain(xDomain)
+        .range([0, innerHeight])
+        .padding(0.1);
     $: xScale = scaleLinear()
-      .domain([0, Math.max.apply(null, yDomain)])
-      .range([0, innerWidth]);
-    $: colorScale = scaleOrdinal(schemeCategory10).domain(xDomain);
+        .domain([0, Math.max.apply(null, yDomain)])
+        .range([0, innerWidth]);
+    // $: colorScale = scaleOrdinal(schemeCategory10);
   
     // 숫자 포맷팅 함수
     const formatNumber = format(".2s");
