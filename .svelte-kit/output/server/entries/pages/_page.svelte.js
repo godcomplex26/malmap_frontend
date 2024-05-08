@@ -1,11 +1,12 @@
 import { c as create_ssr_component, d as add_attribute, f as each, e as escape, v as validate_component } from "../../chunks/ssr.js";
-import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
-import { schemeCategory10 } from "d3-scale-chromatic";
+import { scaleOrdinal, scaleBand, scaleLinear } from "d3-scale";
 import { format } from "d3-format";
+import { schemeCategory10 } from "d3-scale-chromatic";
 import { geoMercator, geoPath } from "d3-geo";
 import { select } from "d3-selection";
 import { zoom } from "d3-zoom";
 import "d3";
+const colorScale = scaleOrdinal(schemeCategory10);
 const BarChart = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let innerHeight;
   let innerWidth;
@@ -13,7 +14,6 @@ const BarChart = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   let yDomain;
   let yScale;
   let xScale;
-  let colorScale;
   let { data } = $$props;
   let { w = 0 } = $$props;
   let { h = 0 } = $$props;
@@ -31,7 +31,6 @@ const BarChart = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   yDomain = data.map((d) => +d.count);
   yScale = scaleBand().domain(xDomain).range([0, innerHeight]).padding(0.1);
   xScale = scaleLinear().domain([0, Math.max.apply(null, yDomain)]).range([0, innerWidth]);
-  colorScale = scaleOrdinal(schemeCategory10).domain(xDomain);
   return `<div class="flex m-0 p-1"><svg${add_attribute("width", w, 0)}${add_attribute("height", h, 0)}><g${add_attribute("transform", `translate(${margin.left},${margin.top})`, 0)}>${each(xScale.ticks(3), (tickValue) => {
     return `<g${add_attribute("transform", `translate(${xScale(tickValue)},0)`, 0)}><line${add_attribute("y2", innerHeight, 0)} stroke="black"></line><text text-anchor="middle" dy=".71em"${add_attribute("y", innerHeight + 3, 0)}>${escape(formatNumber(tickValue))}</text></g>`;
   })}${each(data, (d) => {
@@ -75206,24 +75205,30 @@ const WorldMap = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   let projection;
   let pathGenerator;
   let countScale;
-  let colorScale;
   let { width } = $$props;
   let { height } = $$props;
   let { locationData } = $$props;
   let mapGroup;
   let zoomHandler;
+  let currentZoom = null;
+  let currentTransform = null;
   function initZoom() {
     zoomHandler = zoom().scaleExtent([1, 15]).on("zoom", handleZoom);
     select("#map").call(zoomHandler);
   }
   function handleZoom(event) {
     mapGroup.attr("transform", event.transform);
+    currentZoom = event.transform.k;
+    currentTransform = event.transform;
   }
   function drawMap() {
     if (worldData.features) {
       mapGroup = select("#map").append("g");
       mapGroup.selectAll("path").data(worldData.features).enter().append("path").attr("d", pathGenerator).attr("fill", "lightgray").attr("stroke", "white").attr("stroke-width", 0.5);
       mapGroup.selectAll("circle").data(locationData.filter((d) => d.country_code !== "Unknown")).enter().append("circle").attr("cx", (d) => projection([d.longitude, d.latitude])[0]).attr("cy", (d) => projection([d.longitude, d.latitude])[1]).attr("r", (d) => countScale(d.count)).attr("fill", (d) => colorScale(d.country_code)).attr("opacity", 0.7);
+      if (currentZoom && currentTransform) {
+        select("#map").call(zoomHandler.transform, currentTransform);
+      }
     }
   }
   function clearSVG() {
@@ -75238,7 +75243,6 @@ const WorldMap = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   projection = geoMercator().scale(width / 2 / Math.PI).translate([width / 2, height / 2]);
   pathGenerator = geoPath().projection(projection);
   countScale = scaleLinear().domain([0, Math.max(...locationData.map((d) => d.count))]).range([3, 50]);
-  colorScale = scaleOrdinal(schemeCategory10);
   {
     {
       async function updateMap() {
@@ -75262,8 +75266,8 @@ const CountryList = create_ssr_component(($$result, $$props, $$bindings, slots) 
   if ($$props.show_list === void 0 && $$bindings.show_list && show_list !== void 0)
     $$bindings.show_list(show_list);
   tableData = data;
-  return `<span class="flex"><table class="table-auto w-full text-l rtl:text-right text-gray-500"><thead class="text-sm text-gray-700 uppercase bg-gray-50" data-svelte-h="svelte-137gljo"><tr><th class="text-center"></th> <th class="text-center"></th> <th class="text-center">국가코드</th> <th class="text-center">악성IP</th></tr></thead> <tbody>${each(tableData, (row) => {
-    return `<tr><td class="text-center pl-3"><input checked${add_attribute("id", row.country_code, 0)} type="checkbox" value="" class="w-4 h-4 mb-1 align-middle text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 "></td> <td class="text-center pl-3"><label${add_attribute("for", row.country_code, 0)}><span class="${"fi fi-" + escape(row.country_code.toLowerCase(), true)}"></span></label></td> <td class="text-center font-mono"><label${add_attribute("for", row.country_code, 0)}>${escape(row.country_code)}</label></td> <td class="text-right pr-4 font-mono">${escape(row.count.toLocaleString())}</td> </tr>`;
+  return `<span class="flex"><table class="table-auto w-full text-l rtl:text-right text-gray-500"><thead class="text-sm text-gray-700 uppercase bg-gray-50" data-svelte-h="svelte-5l1pj6"><tr><th class="text-center">맵표시</th> <th class="text-center">국가코드</th> <th class="text-center">악성IP</th></tr></thead> <tbody>${each(tableData, (row) => {
+    return `<tr><td class="text-center"><input class="w-4 h-4 mb-1 align-middle hover:cursor-pointer text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" checked${add_attribute("id", row.country_code, 0)} type="checkbox" value=""></td> <td class="flex text-center font-mono"><span class="flex-auto text-right pr-4"><label class="flex-auto text-right pr-4 hover:cursor-pointer"${add_attribute("for", row.country_code, 0)}><span class="${"fi fi-" + escape(row.country_code.toLowerCase(), true)}"></span></label></span> <span class="flex-auto text-left">${escape(row.country_code)}</span></td> <td class="text-right pr-4 font-mono">${escape(row.count.toLocaleString())}</td> </tr>`;
   })}</tbody></table></span>`;
 });
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -75282,7 +75286,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$settled = true;
     $$result.head = previous_head;
     top5 = show_list.slice(0, Math.min(5, data.length));
-    $$rendered = `<div class="container mt-10 mx-auto"><div class="grid grid-cols-8 grid-rows-2 gap-4"><div class="p-4 bg-gray-200 flex col-span-6 row-span-2"><div id="world_map" class="flex-1 max-h-[600px] overflow-hidden">${validate_component(WorldMap, "WorldMap").$$render(
+    $$rendered = `<div class="container mt-10 mx-auto"><div class="flex-col gap-4 sm:grid sm:grid-cols-8 min-w-[600px] sm:grid-rows-12 sm:min-w-[908px]"><div class="mb-8 sm:mb-0 p-4 bg-gray-200 flex col-span-8 row-span-6 max-h-[632px] sm:col-span-6 sm:row-span-12 min-w-[600px]"><div id="world_map" class="flex-1 h-[600px] max-h-[600px] overflow-hidden">${validate_component(WorldMap, "WorldMap").$$render(
       $$result,
       {
         locationData: show_list,
@@ -75300,7 +75304,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         }
       },
       {}
-    )}</div></div> <div class="flex-cols bg-gray-200 p-4 col-span-2 row-span-1 max-h-[308px] min-w-[244px] overflow-y-auto"><div class="flex pb-3"><label for="code" class="mr-2" data-svelte-h="svelte-13tv94i">필터:</label> <input id="code" type="text" class="flex-1 rounded px-2 min-w-20" placeholder="국가코드"> </div> ${validate_component(CountryList, "CountryList").$$render(
+    )}</div></div> <div class="flex-cols mb-8 sm:mb-0 bg-gray-200 p-4 col-span-8 row-span-3 max-h-96 sm:col-span-2 sm:row-span-6 sm:max-h-[308px] sm:min-w-[308px] overflow-y-auto"><div class="flex pb-3"><label for="code" class="mr-2" data-svelte-h="svelte-13tv94i">필터:</label> <input id="code" type="text" class="flex-1 rounded px-2 min-w-20" placeholder="국가코드"> </div> ${validate_component(CountryList, "CountryList").$$render(
       $$result,
       { data: c_list, show_list },
       {
@@ -75314,7 +75318,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         }
       },
       {}
-    )}</div> <div id="chart" class="flex items-center bg-gray-200 p-4 col-span-2 row-span-1 max-h-[308px] min-w-[244px] relative">${`${validate_component(BarChart, "BarChart").$$render($$result, { w, h, data: top5 }, {}, {})}`} <button class="absolute left-0 top-1/2 transform -translate-y-1/2" data-svelte-h="svelte-1nrxsid"><svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"></path></svg></button> <button class="absolute right-0 top-1/2 transform -translate-y-1/2" data-svelte-h="svelte-1sq9md6"><svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"></path></svg></button></div></div></div>`;
+    )}</div> <div id="chart" class="flex items-center max-h-96 bg-gray-200 p-4 sm:col-span-2 sm:row-span-6 sm:max-h-[308px] sm:min-w-[308px]">${`${validate_component(BarChart, "BarChart").$$render($$result, { w, h, data: top5 }, {}, {})}`} <button class="absolute left-0 top-1/2 transform -translate-y-1/2" data-svelte-h="svelte-yh9dat"><svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"></path></svg></button> <button class="absolute right-0 top-1/2 transform -translate-y-1/2" data-svelte-h="svelte-1or99q2"><svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"></path></svg></button></div></div></div>`;
   } while (!$$settled);
   return $$rendered;
 });
