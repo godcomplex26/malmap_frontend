@@ -1,38 +1,51 @@
 <script>
-    import { onMount } from 'svelte';
-    import { geoPath, geoMercator } from 'd3-geo';
-    import { select } from 'd3-selection';
-    import { scaleLinear, scaleOrdinal } from 'd3-scale';
-    import { schemeCategory10 } from 'd3-scale-chromatic';
-    // import { interpolateRainbow } from 'd3-scale-chromatic';
-    import { zoom } from 'd3-zoom';
-    import worldData from '../data/worldmap.geo.json';
+  import { onMount } from 'svelte';
+  import { geoPath, geoMercator } from 'd3-geo';
+  import { select } from 'd3-selection';
+  import { scaleLinear, scaleOrdinal } from 'd3-scale';
+  import { schemeCategory10 } from 'd3-scale-chromatic';
+  // import { interpolateRainbow } from 'd3-scale-chromatic';
+  import { zoom } from 'd3-zoom';
+  import worldData from '../data/worldmap.geo.json';
+	import { timeDay } from 'd3';
   
     // let worldData = [];
-    let width = 0;
-    let height = 0;
-    let locationData = [];
+    /**
+	 * @type {number}
+	 */
+     export let width;
+    /**
+	 * @type {number}
+	 */
+     export let height;
+    /**
+	 * @type {any[]}
+	 */
+     export let locationData;
+    /**
+	 * @type {import("d3-selection").Selection<SVGGElement, any, HTMLElement, any>}
+	 */
     let mapGroup;
     let zoomHandler;
 
-    function getWorldMapSize() {
-      const worldMapElement = document.getElementById('world_map');
-      if (worldMapElement) {
-          width = worldMapElement.clientWidth-30;
-          height = worldMapElement.clientHeight-30;
-          console.log(width);
-          console.log(height);
-      }
-    }
-  
+    // function getWorldMapSize() {
+    //   const worldMapElement = document.getElementById('world_map');
+    //   if (worldMapElement) {
+    //       width = worldMapElement.clientWidth-30;
+    //       height = worldMapElement.clientHeight-30;
+    //       console.log(width);
+    //       console.log(height);
+    //   }
+    // }
+    
     onMount(async () => {
       try {
         // const response = await fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson');
         // worldData = await response.json();
-        const locationResponse = await fetch('http://localhost:8080/api/ips/country-count-gps');
-        locationData = await locationResponse.json();
-        getWorldMapSize();
-        initZoom();
+        // const locationResponse = await fetch('http://localhost:8080/api/ips/country-count-gps');
+        // locationData = await locationResponse.json();
+        // getWorldMapSize();
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -75,6 +88,7 @@
   
     function drawMap() {
       if (worldData.features) {
+        
         mapGroup = select('#map')
           .append('g');
   
@@ -112,9 +126,27 @@
     }
   
     $: {
+    async function updateMap() {
       if (worldData.features && locationData.length > 0) {
-        drawMap();
+        clearSVG();
+        await drawMap();
+        initZoom();
       }
+    }
+    updateMap();
+  }
+
+    function clearSVG() {
+      select('#map')
+        .selectAll('*')
+        .remove();
+    }
+
+    function resetZoom() {
+      select('#map')
+        .transition()
+        .duration(750)
+        .call(zoomHandler.transform, zoomIdentity);
     }
 </script>
 <div class="flex">

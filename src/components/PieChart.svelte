@@ -4,9 +4,11 @@
     import { pie, arc } from "d3-shape";
   
     export let data;
+    export let w = 0;
+    export let h = 0;
   
-    let width = 270;
-    let height = 270;
+    let width = w-38;
+    let height = h;
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     const innerHeight = height - margin.top - margin.bottom;
     const innerWidth = width - margin.left - margin.right;

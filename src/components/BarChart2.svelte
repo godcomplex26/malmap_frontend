@@ -1,14 +1,17 @@
 <script>
     import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
     import { schemeCategory10 } from "d3-scale-chromatic";
+    import { format } from "d3-format";
   
     export let data;
+    export let w = 0;
+    export let h = 0;
   
-    let width = 270;
-    let height = 270;
-    const margin = { top: 20, right: 20, bottom: 30, left: 50 };
-    const innerHeight = height - margin.top - margin.bottom;
-    const innerWidth = width - margin.left - margin.right;
+    $: width = w;
+    $: height = h;
+    const margin = { top: 30, right: 50, bottom: 30, left: 45 };
+    $: innerHeight = height - margin.top - margin.bottom;
+    $: innerWidth = width - margin.left - margin.right;
   
     $: xScale = scaleBand()
       .domain(data.map((d) => d.country_code))
@@ -20,6 +23,8 @@
       .range([innerHeight, 0]);
   
     $: colorScale = scaleOrdinal(schemeCategory10);
+
+    const formatNumber = format(".2s");
   </script>
   
   <div class="flex m-0 p-1">
@@ -59,7 +64,7 @@
             <g transform={`translate(0,${yScale(tickValue)})`}>
               <line x2={-5} stroke="black" />
               <text x={-10} dy=".32em" text-anchor="end" font-size="12">
-                {tickValue}
+                {formatNumber(tickValue)}
               </text>
             </g>
           {/each}
