@@ -19,6 +19,7 @@
       if (selectedCountry) {
         show_list = [...show_list, selectedCountry];
       }
+      show_list.sort((a, b) => b.count - a.count);
     }
     else {
       const filteredData = show_list.filter(item => item.country_code.toLowerCase().includes(event.target.id.toLowerCase()));
@@ -42,8 +43,7 @@
   <table class="table-auto w-full text-l rtl:text-right text-gray-500">
     <thead class="text-sm text-gray-700 uppercase bg-gray-50">
       <tr>
-        <th class="text-center"></th>
-        <th class="text-center"></th>
+        <th class="text-center">맵표시</th>
         <th class="text-center">국가코드</th>
         <th class="text-center">악성IP</th>
       </tr>
@@ -51,9 +51,11 @@
     <tbody>
       {#each tableData as row}
         <tr>
-          <td class="text-center pl-3"><input checked on:change={handleCheckBoxInput} id="{row.country_code}" type="checkbox" value="" class="w-4 h-4 mb-1 align-middle text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 "></td>
-          <td class="text-center pl-3"><label for="{row.country_code}"><span class="fi fi-{row.country_code.toLowerCase()}"></span></label></td>
-          <td class="text-center font-mono"><label for="{row.country_code}">{row.country_code}</label></td>
+          <td class="text-center"><input class="w-4 h-4 mb-1 align-middle hover:cursor-pointer text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" checked on:change={handleCheckBoxInput} id="{row.country_code}" type="checkbox" value="" ></td>
+          <td class="flex text-center font-mono">
+            <span class="flex-auto text-right pr-4"><label class="flex-auto text-right pr-4 hover:cursor-pointer" for="{row.country_code}"><span class="fi fi-{row.country_code.toLowerCase()}"></span></label></span>
+            <span class="flex-auto text-left">{row.country_code}</span>
+          </td>
           <td class="text-right pr-4 font-mono">{row.count.toLocaleString()}</td>
         </tr>
       {/each}

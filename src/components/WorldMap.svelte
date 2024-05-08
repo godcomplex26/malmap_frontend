@@ -5,11 +5,11 @@
   import { scaleLinear, scaleOrdinal } from 'd3-scale';
   import { schemeCategory10 } from 'd3-scale-chromatic';
   // import { interpolateRainbow } from 'd3-scale-chromatic';
-  import { zoom } from 'd3-zoom';
+  import { zoom, zoomIdentity } from 'd3-zoom';
   import worldData from '../data/worldmap.geo.json';
 	import { timeDay } from 'd3';
   
-    // let worldData = [];
+  // let worldData = [];
     /**
 	 * @type {number}
 	 */
@@ -27,6 +27,8 @@
 	 */
     let mapGroup;
     let zoomHandler;
+    let currentZoom = null;
+    let currentTransform = null;
 
     // function getWorldMapSize() {
     //   const worldMapElement = document.getElementById('world_map');
@@ -37,6 +39,23 @@
     //       console.log(height);
     //   }
     // }
+
+    // function focusCenter() {
+    //   const [[x0, y0], [x1, y1]] = pathGenerator.bounds(worldData);
+    //   const dx = x1 - x0;
+    //   const dy = y1 - y0;
+    //   const x = (x0 + x1) / 2;
+    //   const y = (y0 + y1) / 2;
+    //   const scale = 1 / Math.max(dx / width, dy / height);
+
+    //   select('#map')
+    //     .transition()
+    //     .duration(750)
+    //     .call(
+    //       zoomHandler.transform,
+    //       zoomIdentity.translate(width / 2, height / 2).scale(scale).translate(-x, -y)
+    //     );
+    // }
     
     onMount(async () => {
       try {
@@ -45,7 +64,7 @@
         // const locationResponse = await fetch('http://localhost:8080/api/ips/country-count-gps');
         // locationData = await locationResponse.json();
         // getWorldMapSize();
-        
+        // await focusCenter();
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -84,7 +103,10 @@
   
     function handleZoom(event) {
       mapGroup.attr('transform', event.transform);
+      currentZoom = event.transform.k;
+      currentTransform = event.transform;
     }
+    
   
     function drawMap() {
       if (worldData.features) {
@@ -122,19 +144,23 @@
         //   .attr('font-size', '8px')
         //   .attr('fill', 'black')
         //   .text(d => d.country_code);
+        if (currentZoom && currentTransform) {
+          select('#map')
+            .call(zoomHandler.transform, currentTransform);
+        }
       }
     }
   
     $: {
-    async function updateMap() {
-      if (worldData.features && locationData.length > 0) {
-        clearSVG();
-        await drawMap();
-        initZoom();
+      async function updateMap() {
+        if (worldData.features && locationData.length > 0) {
+          clearSVG();
+          await drawMap();
+          initZoom();
+        }
       }
+      updateMap();
     }
-    updateMap();
-  }
 
     function clearSVG() {
       select('#map')
@@ -151,4 +177,5 @@
 </script>
 <div class="flex">
     <svg class="flex flex-1 items-center" id="map" width={width} height={height}></svg>
+    <!-- <button on:click={focusCenter}>test</button> -->
 </div>

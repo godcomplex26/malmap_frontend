@@ -30,6 +30,15 @@
         console.error('Error fetching data:', error);
       }
     });
+
+    /**
+	 * @param {any[]} data
+	 */
+    function getTop5(data) {
+        top5 = data.slice(0, Math.min(5, data.length));
+    }
+
+    $: top5 = show_list.slice(0, Math.min(5, data.length));
   
     function nextChart() {
       activeChart = (activeChart + 1) % 3;
@@ -79,13 +88,13 @@
   </script>
   
   <div class="container mt-10 mx-auto">
-    <div class="grid grid-cols-8 grid-rows-2 gap-4">
-        <div class="p-4 bg-gray-200 flex col-span-6 row-span-2">
-            <div id="world_map" class="flex-1 max-h-[600px] overflow-hidden" bind:clientWidth={map_width} bind:clientHeight={map_height}>
+    <div class="grid grid-cols-8 grid-rows-12 gap-4 min-w-[1072px]">
+        <div class="p-4 bg-gray-200 flex col-span-6 row-span-12 min-w-[764px]">
+            <div id="world_map" class="flex-1 h-[616px] max-h-[616px] overflow-hidden" bind:clientWidth={map_width} bind:clientHeight={map_height}>
                 <WorldMap locationData={show_list} bind:width={map_width} bind:height={map_height}></WorldMap>
             </div>
         </div>
-      <div class="flex-cols bg-gray-200 p-4 col-span-2 row-span-1 max-h-[308px] min-w-[244px] overflow-y-auto">
+      <div class="flex-cols bg-gray-200 p-4 col-span-2 row-span-6 max-h-[308px] min-w-[308px] overflow-y-auto">
         <div class="flex pb-3">
             <label for="code" class="mr-2">필터:</label>
             <input id="code" type="text" class="flex-1 rounded px-2 min-w-20" placeholder="국가코드" on:input={handleKeyboardInput}>
@@ -93,7 +102,7 @@
         </div>
         <CountryList bind:data={c_list} bind:show_list></CountryList>
       </div>
-      <div id="chart" class="flex items-center bg-gray-200 p-4 col-span-2 row-span-1 max-h-[308px] min-w-[244px] relative" bind:clientWidth={w} bind:clientHeight={h}>
+      <div id="chart" class="flex items-center bg-gray-200 p-4 col-span-2 row-span-6 max-h-[308px] min-w-[308px]" bind:clientWidth={w} bind:clientHeight={h}>
         {#if activeChart === 0}
             <BarChart {w} {h} data={top5}></BarChart>
         {:else if activeChart === 1}
