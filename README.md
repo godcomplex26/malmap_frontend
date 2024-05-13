@@ -30,7 +30,7 @@
 ## 설치 및 실행 방법
 
 1. 다음 링크에서 릴리스 파일을 다운로드합니다:
-  https://github.com/godcomplex26/malmap_frontend/releases/download/v0.1.0/nProject-java-node-included.7z
+  https://github.com/godcomplex26/nProject-frontend/releases/download/v0.1.0/nProject-java-node-included.7z
 
 2. 다운로드한 파일을 압축 해제합니다.
 
