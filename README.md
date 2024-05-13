@@ -1,38 +1,60 @@
-# create-svelte
+# 악성 IP 데이터 시각화
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+이 프로젝트는 악성 IP의 GPS 데이터를 기반으로 지도상에 악성 IP의 국가 출처와 개수를 시각화하는 웹 애플리케이션입니다.
 
-## Creating a project
+## 목차
 
-If you're seeing this, you've probably already done this step. Congrats!
+1. [프로젝트 설명](#프로젝트-설명)
+2. [기술 스택](#기술-스택)
+3. [시스템 구조](#시스템-구조)
+4. [설치 및 실행 방법](#설치-및-실행-방법)
+  - [백엔드 설정](#백엔드-설정)
+  - [프론트엔드 설정](#프론트엔드-설정)
+5. [주요 기능](#주요-기능)
+6. [API 문서](#api-문서)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## 프로젝트 설명
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+이 프로젝트는 악성 IP의 GPS 데이터를 수집하고 분석하여 지도상에 국가별 악성 IP의 분포와 통계를 시각화합니다. 사용자는 웹 인터페이스를 통해 각 국가의 악성 IP 정보를 확인할 수 있습니다.
 
-## Developing
+## 기술 스택
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- 백엔드: Spring Boot
+- 프론트엔드: Svelte
+- 데이터베이스: H2
 
-```bash
-npm run dev
+## 시스템 구조
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+이 프로젝트는 프론트엔드 서버와 백엔드 서버(API)로 구성되어 있습니다.
 
-## Building
+## 설치 및 실행 방법
 
-To create a production version of your app:
+1. 다음 링크에서 릴리스 파일을 다운로드합니다:
+  https://github.com/godcomplex26/malmap_frontend/releases/download/v0.1.0/nProject-java-node-included.7z
 
-```bash
-npm run build
-```
+2. 다운로드한 파일을 압축 해제합니다.
 
-You can preview the production build with `npm run preview`.
+3. `run.bat` 파일을 실행하여 프로젝트를 시작합니다.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+### 백엔드 설정
+
+- 백엔드 서버를 실행하기 전에 8080 포트가 사용 가능한 상태여야 합니다.
+
+### 프론트엔드 설정
+
+- 프론트엔드 서버를 실행하기 전에 3000 포트가 사용 가능한 상태여야 합니다.
+
+## 주요 기능
+
+- 지도에 국가별 악성 IP의 분포를 시각화합니다.
+- 차트를 통해 국가별 악성 IP의 통계 정보를 제공합니다.
+- 사용자는 지도와 차트를 통해 각 국가의 악성 IP 정보를 확인할 수 있습니다.
+
+## API 문서
+
+백엔드 API는 다음 엔드포인트를 제공합니다:
+
+- `http://localhost:8080/api/ips/country-count-gps`: 국가별 악성 IP의 GPS 데이터를 JSON 형식으로 반환합니다.
+
+CORS 설정:
+- 허용된 도메인: `localhost:5173`, `localhost:3000`, `localhost`

@@ -8,7 +8,7 @@
     export let w = 0;
     export let h = 0;
   
-    const margin = { top: 25, right: 50, bottom: 30, left: 30 };
+    const margin = { top: 30, right: 50, bottom: 30, left: 30 };
     $: innerHeight = h - margin.top - margin.bottom;
     $: innerWidth = w - margin.left - margin.right;
   

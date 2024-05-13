@@ -26,6 +26,7 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const API_URL: string;
 	export const NVM_INC: string;
 	export const LDFLAGS: string;
 	export const TERM_PROGRAM: string;
@@ -137,6 +138,7 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		API_URL: string;
 		NVM_INC: string;
 		LDFLAGS: string;
 		TERM_PROGRAM: string;
